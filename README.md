@@ -1,5 +1,5 @@
-# installs all the packages
+## installs all the packages
 npm install
 
-# starts the app
+## starts the app
 npm run dev
