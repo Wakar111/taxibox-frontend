@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Shield, Star, Clock, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -9,11 +9,7 @@ import BookingForm from '../components/BookingForm';
 export default function Home() {
   const location = useLocation();
 
-  useLayoutEffect(() => {
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0; // For Safari
-  }, []);
-
+  // Only scroll to booking if coming from another page with scrollToBooking state
   useEffect(() => {
     if (location.state?.scrollToBooking) {
       const bookingSection = document.getElementById('booking');

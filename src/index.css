@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* DatePicker custom styles */
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item.booked-time {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+  color: #ef4444 !important;
+  text-decoration: line-through;
+  cursor: not-allowed !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item.partially-booked-time {
+  background-color: rgba(234, 179, 8, 0.2) !important;
+  color: #eab308 !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item.booked-time:hover {
+  background-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item.partially-booked-time:hover {
+  background-color: rgba(234, 179, 8, 0.3) !important;
+}
+
+/* Base styles */
+body {
+  @apply bg-zinc-900 text-white;
+}
+
 html {
   scroll-behavior: smooth;
 }
