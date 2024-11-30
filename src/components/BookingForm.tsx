@@ -278,7 +278,7 @@ export default function BookingForm() {
                 : 'bg-zinc-700 text-white hover:bg-zinc-600'
             }`}
           >
-            Ride Now
+            Sofort fahren
           </button>
           <button
             type="button"
@@ -289,13 +289,13 @@ export default function BookingForm() {
                 : 'bg-zinc-700 text-white hover:bg-zinc-600'
             }`}
           >
-            Schedule Ride
+            Fahrt buchen
           </button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block mb-2">Pickup Location *</label>
+            <label className="block mb-2">Abholort *</label>
             <div className="relative">
               <MapPin className="absolute left-3 top-3 text-gray-400" />
               <input 
@@ -304,13 +304,13 @@ export default function BookingForm() {
                 value={formData.pickupLocation}
                 onChange={handleInputChange}
                 className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                placeholder="Enter pickup address"
+                placeholder="Abholadresse eingeben"
                 required
               />
             </div>
           </div>
           <div>
-            <label className="block mb-2">Destination *</label>
+            <label className="block mb-2">Zielort *</label>
             <div className="relative">
               <MapPin className="absolute left-3 top-3 text-gray-400" />
               <input 
@@ -319,7 +319,7 @@ export default function BookingForm() {
                 value={formData.destination}
                 onChange={handleInputChange}
                 className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                placeholder="Enter destination"
+                placeholder="Zieladresse eingeben"
                 required
               />
             </div>
@@ -328,7 +328,7 @@ export default function BookingForm() {
         
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block mb-2">Phone *</label>
+            <label className="block mb-2">Telefon *</label>
             <div className="relative">
               <Phone className="absolute left-3 top-3 text-gray-400" />
               <input 
@@ -337,13 +337,13 @@ export default function BookingForm() {
                 value={formData.phone}
                 onChange={handleInputChange}
                 className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                placeholder="Your phone number"
+                placeholder="Ihre Telefonnummer"
                 required
               />
             </div>
           </div>
           <div>
-            <label className="block mb-2">Email *</label>
+            <label className="block mb-2">E-Mail *</label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 text-gray-400" />
               <input 
@@ -352,7 +352,7 @@ export default function BookingForm() {
                 value={formData.email}
                 onChange={handleInputChange}
                 className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                placeholder="Your email"
+                placeholder="Ihre E-Mail-Adresse"
                 required
               />
             </div>
@@ -361,7 +361,7 @@ export default function BookingForm() {
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block mb-2">Vehicle Type *</label>
+            <label className="block mb-2">Fahrzeugtyp *</label>
             <div className="relative">
               <Car className="absolute left-3 top-3 text-gray-400" />
               <select
@@ -381,25 +381,25 @@ export default function BookingForm() {
           </div>
           {isScheduled && (
             <div>
-              <label className="block mb-2">Select Date and Time *</label>
+              <label className="block mb-2">Termin auswählen*</label>
               <div className="relative w-full">
                 <DatePicker
                   selected={selectedDateTime}
                   onChange={(date) => setSelectedDateTime(date)}
                   showTimeSelect
                   timeFormat="HH:mm"
-                  timeIntervals={15}
+                  timeIntervals={30}
                   dateFormat="MMMM d, yyyy h:mm aa"
                   minDate={new Date()}
                   filterTime={isTimeSlotAvailable}
                   timeClassName={timeClassName}
                   className={`w-full bg-zinc-800 rounded-lg py-2 px-4 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                  placeholderText="Select date and time"
+                  placeholderText="Termin auswählen"
                   required
                 />
               </div>
               <p className="mt-2 text-sm text-gray-400">
-                Note: Maximum {MAX_BOOKINGS_PER_SLOT} bookings allowed per time slot for each vehicle type
+                Hinweis: Maximal {MAX_BOOKINGS_PER_SLOT} Buchungen pro Zeitfenster für jeden Fahrzeugtyp zulässig.
               </p>
             </div>
           )}
@@ -414,7 +414,7 @@ export default function BookingForm() {
               : 'hover:bg-yellow-400'
           }`}
         >
-          {isSubmitting ? 'Booking...' : 'Book Now'}
+          {isSubmitting ? 'Booking...' : 'Buchen'}
         </button>
       </div>
     </form>
