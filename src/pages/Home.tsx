@@ -9,7 +9,6 @@ import BookingForm from '../components/BookingForm';
 export default function Home() {
   const location = useLocation();
 
-  // Only scroll to booking if coming from another page with scrollToBooking state
   useEffect(() => {
     if (location.state?.scrollToBooking) {
       const bookingSection = document.getElementById('booking');
@@ -26,7 +25,7 @@ export default function Home() {
 
   return (
     <div className="bg-zinc-900 min-h-screen text-white">
-      <Navbar onSectionClick={scrollToSection} />
+      <Navbar onSectionClick={scrollToSection} showNavLinks={true} />
 
       {/* Hero Section */}
       <div className="h-screen relative flex items-center justify-center">
@@ -38,13 +37,13 @@ export default function Home() {
           />
         </div>
         <div className="relative text-center space-y-6 px-4">
-          <h1 className="text-6xl font-bold">Premium Taxi Service</h1>
-          <p className="text-xl max-w-2xl mx-auto">Experience luxury transportation with our fleet vehicles</p>
+          <h1 className="text-6xl font-bold">Ihr zuverlässiger Partner für Taxifahrten</h1>
+          <p className="text-xl max-w-2xl mx-auto">Professioneller Service, erfahrene Fahrer und komfortable Fahrzeuge für Ihre sichere Reise</p>
           <button 
             onClick={() => scrollToSection('booking')}
             className="bg-yellow-500 text-black px-8 py-3 rounded-full font-semibold hover:bg-yellow-400 transition"
           >
-            Book Your Ride
+            Jetzt buchen
           </button>
         </div>
         <ChevronDown 
@@ -56,22 +55,22 @@ export default function Home() {
       {/* About Section */}
       <section id="about" className="py-20 bg-zinc-800">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-12 text-center">About Us</h2>
+          <h2 className="text-4xl font-bold mb-12 text-center">Über uns</h2>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
               <Shield className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
-              <h3 className="text-xl font-semibold mb-2">Safety First</h3>
-              <p className="text-gray-300">Professional drivers with years of experience and fully insured vehicles.</p>
-            </div>
-            <div className="text-center">
-              <Star className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
-              <h3 className="text-xl font-semibold mb-2">Premium Service</h3>
-              <p className="text-gray-300">Luxury Mercedes-Benz fleet maintained to the highest standards.</p>
+              <h3 className="text-xl font-semibold mb-2">Sicherheit zuerst</h3>
+              <p className="text-gray-300">Professionelle Fahrer mit langjähriger Erfahrung und vollversicherte Fahrzeuge.</p>
             </div>
             <div className="text-center">
               <Clock className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
-              <h3 className="text-xl font-semibold mb-2">24/7 Available</h3>
-              <p className="text-gray-300">Round-the-clock service for all your transportation needs.</p>
+              <h3 className="text-xl font-semibold mb-2">Pünktlichkeit</h3>
+              <p className="text-gray-300">Zuverlässiger Service rund um die Uhr, damit Sie pünktlich an Ihrem Ziel ankommen.</p>
+            </div>
+            <div className="text-center">
+              <Star className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
+              <h3 className="text-xl font-semibold mb-2">Komfort</h3>
+              <p className="text-gray-300">Moderne, gepflegte Fahrzeuge für eine angenehme und komfortable Fahrt.</p>
             </div>
           </div>
         </div>
@@ -80,26 +79,26 @@ export default function Home() {
       {/* Services Section */}
       <section id="services" className="py-20">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-12 text-center">Our Services</h2>
+          <h2 className="text-4xl font-bold mb-12 text-center">Unsere Angebote</h2>
           <div className="grid md:grid-cols-2 gap-8">
             <Link to="/airport-transfers" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
                 src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80"
-                alt="Airport Transfer"
-                className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                alt="Flughafentransfer"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <h3 className="text-2xl font-bold">Airport Transfers</h3>
+                <h3 className="text-2xl font-bold">Flughafentransfer</h3>
               </div>
             </Link>
             <Link to="/business-travel" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
                 src="https://images.unsplash.com/photo-1611448746128-7c39e03b71e4?auto=format&fit=crop&q=80"
-                alt="Business Travel"
+                alt="Geschäftsreisen"
                 className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <h3 className="text-2xl font-bold">Business Travel</h3>
+                <h3 className="text-2xl font-bold">Geschäftsreisen</h3>
               </div>
             </Link>
           </div>
@@ -109,7 +108,7 @@ export default function Home() {
       {/* Booking Section */}
       <section id="booking" className="py-20 bg-zinc-800">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-12 text-center">Book Your Ride</h2>
+          <h2 className="text-4xl font-bold mb-12 text-center">Jetzt buchen</h2>
           <div className="max-w-2xl mx-auto bg-zinc-900 p-8 rounded-xl shadow-xl">
             <BookingForm />
           </div>

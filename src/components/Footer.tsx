@@ -10,7 +10,11 @@ export default function Footer() {
           <Car className="h-6 w-6 text-yellow-500" />
           <span className="text-xl font-bold text-white">TaxiBoy</span>
         </Link>
-        <p>© 2024 TaxiBoy. All rights reserved.</p>
+        <div className="flex justify-center space-x-4 mb-4">
+          <Link to="/cookie-policy" className="hover:text-yellow-500">Cookie-Richtlinien</Link>
+          <Link to="/privacy-policy" className="hover:text-yellow-500">Datenschutz</Link>
+        </div>
+        <p> 2024 TaxiBoy. All rights reserved.</p>
       </div>
     </footer>
   );
