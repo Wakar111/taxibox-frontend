@@ -81,14 +81,14 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-bold mb-12 text-center">Unsere Angebote</h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <Link to="/airport-transfers" className="relative h-64 rounded-xl overflow-hidden group">
+            <Link to="/taxi-rechner" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
                 src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80"
                 alt="Flughafentransfer"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <h3 className="text-2xl font-bold">Flughafentransfer</h3>
+                <h3 className="text-2xl font-bold">Taxirechner</h3>
               </div>
             </Link>
             <Link to="/business-travel" className="relative h-64 rounded-xl overflow-hidden group">

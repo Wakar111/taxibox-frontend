@@ -1,3 +1,3 @@
 export const config = {
-  googleMapsApiKey: ''
+  googleMapsApiKey: '<GOOGLE-API-KEY>'
 };
