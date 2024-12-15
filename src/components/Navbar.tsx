@@ -8,7 +8,8 @@ interface NavbarProps {
 }
 
 const navigationItems = [
-  { path: '/', label: 'Startseite' }
+  { path: '/', label: 'Startseite' },
+  { path: '/taxi-rechner', label: 'Taxirechner' }
 ];
 
 const scrollItems = [
