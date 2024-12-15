@@ -46,6 +46,8 @@ export default function BookingForm() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [bookingNumber, setBookingNumber] = useState<string>('');
   const [pickupError, setPickupError] = useState('');
+  const [distance, setDistance] = useState<number | null>(null);
+  const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
 
   const [pickupAutocomplete, setPickupAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const [destinationAutocomplete, setDestinationAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
@@ -309,6 +311,31 @@ export default function BookingForm() {
     }
   };
 
+  const handleCalculateDistance = () => {
+    if (pickupAutocomplete && destinationAutocomplete) {
+      const pickupPlace = pickupAutocomplete.getPlace();
+      const destinationPlace = destinationAutocomplete.getPlace();
+      if (pickupPlace.geometry?.location && destinationPlace.geometry?.location) {
+        const distance = google.maps.geometry.spherical.computeDistanceBetween(
+          pickupPlace.geometry.location,
+          destinationPlace.geometry.location
+        );
+        setDistance(distance);
+        // Convert distance to kilometers
+        const distanceInKm = distance / 1000;
+        // Display the distance in kilometers
+        console.log(`Distance: ${distanceInKm} km`);
+        setMapCenter({
+          lat: pickupPlace.geometry.location.lat(),
+          lng: pickupPlace.geometry.location.lng()
+        });
+      }
+    }
+  };
+
+  const taxiPricePerKm = 1.5; // Example price per km for taxi
+  const rentalCarPricePerKm = 1.0; // Example price per km for rental car
+
   return (
     <div>
       {isLoaded ? (
@@ -511,6 +538,23 @@ export default function BookingForm() {
                 </div>
               )}
             </div>
+
+            <button
+              type="button"
+              onClick={handleCalculateDistance}
+              className="w-full bg-yellow-500 text-black py-3 px-6 rounded-lg font-semibold transition-colors hover:bg-yellow-400"
+            >
+              Entfernung berechnen
+            </button>
+
+            {distance && (
+              <div>
+                <h2>Entfernung: ca. {Math.floor(distance / 1000)} km</h2>
+                <h3>Taxi Preis: {Math.floor(distance / 1000) * taxiPricePerKm} €</h3>
+                <h3>Mietwagen Preis: {Math.floor(distance / 1000) * rentalCarPricePerKm} €</h3>
+                <h3>Minivan Preis: {Math.floor(distance / 1000) * rentalCarPricePerKm +10} €</h3>
+              </div>
+            )}
 
             <button
               type="submit"
