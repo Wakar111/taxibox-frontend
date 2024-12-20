@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../styles/datepicker.css";
 import { Autocomplete } from '@react-google-maps/api';
 import { useGoogleMaps } from '../contexts/GoogleMapsContext';
+import { useNavigate } from 'react-router-dom';
 
 const MAINZ_CENTER = { lat: 50.0, lng: 8.2711 }; // Mainz center coordinates
 const WIESBADEN_CENTER = { lat: 50.0782, lng: 8.2397 }; // Wiesbaden center coordinates
@@ -12,9 +13,7 @@ const MAX_RADIUS = 20000; // 20km radius in meters
 
 export default function BookingForm() {
   const { isLoaded } = useGoogleMaps();
-  const mainzCenter = MAINZ_CENTER;
-  const wiesbadenCenter = WIESBADEN_CENTER;
-  const maxRadius = MAX_RADIUS;
+  const navigate = useNavigate();
 
   // Function to check if a location is within radius of either Mainz or Wiesbaden
   const isWithinServiceArea = (location: google.maps.LatLng) => {
@@ -222,8 +221,10 @@ export default function BookingForm() {
       vehicleType: formData.vehicleType
     };
 
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
     try {
-      const response = await fetch('http://localhost:3001/api/book-ride', {
+      const response = await fetch(`${apiUrl}/api/book-ride`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -271,6 +272,100 @@ export default function BookingForm() {
     }
 
     setIsSubmitting(false);
+  };
+
+  const handleCalculate = async () => {
+    if (!validateForm()) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Bitte füllen Sie alle Pflichtfelder aus.'
+      });
+      return;
+    }
+
+    const service = new google.maps.DirectionsService();
+    
+    try {
+      const result = await new Promise((resolve, reject) => {
+        service.route(
+          {
+            origin: formData.pickupLocation,
+            destination: formData.destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+          },
+          (result, status) => {
+            if (status === 'OK' && result) {
+              resolve(result);
+            } else {
+              reject(new Error('Route konnte nicht berechnet werden'));
+            }
+          }
+        );
+      }) as google.maps.DirectionsResult;
+
+      const route = result.routes[0];
+      if (!route || !route.legs[0]) {
+        throw new Error('Keine gültige Route gefunden');
+      }
+
+      const distance = route.legs[0].distance?.value || 0; // in meters
+      const duration = route.legs[0].duration?.text || '';
+      const distanceInKm = distance / 1000;
+
+      // Calculate price
+      const baseFare = 3.50;
+      const pricePerKm = 2.20;
+      const totalPrice = baseFare + (distanceInKm * pricePerKm);
+
+      // Format date and time if scheduled
+      const bookingDate = isScheduled && selectedDateTime 
+        ? selectedDateTime.toISOString().split('T')[0] // This will give YYYY-MM-DD
+        : null;
+
+      const bookingTime = isScheduled && selectedDateTime
+        ? selectedDateTime.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          })
+        : null;
+
+      // Log the values before navigation
+      console.log('Scheduled:', isScheduled);
+      console.log('Selected DateTime:', selectedDateTime);
+      console.log('Formatted Date:', bookingDate);
+      console.log('Formatted Time:', bookingTime);
+
+      navigate('/booking-overview', {
+        state: {
+          bookingDetails: {
+            startAddress: formData.pickupLocation,
+            endAddress: formData.destination,
+            isScheduled: isScheduled,
+            date: bookingDate,
+            time: bookingTime,
+            passengers: 1,
+            distance: distanceInKm,
+            duration: duration,
+            phone: formData.phone,
+            email: formData.email,
+            vehicleType: formData.vehicleType,
+            price: {
+              base: baseFare,
+              perKm: pricePerKm * distanceInKm,
+              total: totalPrice
+            }
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Error calculating route:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Fehler bei der Routenberechnung'
+      });
+    }
   };
 
   const onPickupLoad = (autocomplete: google.maps.places.Autocomplete) => {
@@ -512,17 +607,31 @@ export default function BookingForm() {
               )}
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting || !isFormValid}
-              className={`w-full bg-yellow-500 text-black py-3 px-6 rounded-lg font-semibold transition-colors ${
-                isSubmitting || !isFormValid 
-                  ? 'opacity-50 cursor-not-allowed bg-gray-400' 
-                  : 'hover:bg-yellow-400'
-              }`}
-            >
-              {isSubmitting ? 'Booking...' : 'Buchen'}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                type="submit"
+                disabled={isSubmitting || !isFormValid}
+                className={`flex-1 bg-yellow-500 text-black py-3 px-6 rounded-lg font-semibold transition-colors ${
+                  isSubmitting || !isFormValid 
+                    ? 'opacity-50 cursor-not-allowed bg-gray-400' 
+                    : 'hover:bg-yellow-400'
+                }`}
+              >
+                {isSubmitting ? 'Booking...' : 'Buchen'}
+              </button>
+              <button
+                type="button"
+                onClick={handleCalculate}
+                disabled={!isFormValid}
+                className={`flex-1 bg-yellow-500 text-black py-3 px-6 rounded-lg font-semibold transition-colors ${
+                  !isFormValid 
+                    ? 'opacity-50 cursor-not-allowed bg-gray-400' 
+                    : 'hover:bg-yellow-400'
+                }`}
+              >
+                Berechnen
+              </button>
+            </div>
           </div>
         </form>
       ) : (

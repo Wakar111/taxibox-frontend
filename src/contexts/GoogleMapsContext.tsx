@@ -1,6 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { LoadScript, Libraries } from '@react-google-maps/api';
-import { config } from '../config';
 
 export const GOOGLE_MAPS_LIBRARIES: Libraries = ['places', 'geometry'];
 
@@ -19,7 +18,7 @@ interface GoogleMapsProviderProps {
 export function GoogleMapsProvider({ children }: GoogleMapsProviderProps) {
   return (
     <LoadScript
-      googleMapsApiKey={config.googleMapsApiKey}
+      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
       libraries={GOOGLE_MAPS_LIBRARIES}
     >
       <GoogleMapsContext.Provider value={{ isLoaded: true }}>
