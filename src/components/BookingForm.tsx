@@ -187,91 +187,52 @@ export default function BookingForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      setSubmitStatus({
-        type: 'error',
-        message: 'Please fill in all required fields'
-      });
-      return;
-    }
-
-    // Check if the selected time slot is still available
-    if (isScheduled && selectedDateTime) {
-      const bookingCount = getBookingCount(selectedDateTime, formData.vehicleType);
-      if (bookingCount >= MAX_BOOKINGS_PER_SLOT) {
-        setSubmitStatus({
-          type: 'error',
-          message: `This time slot is fully booked for ${formData.vehicleType}. Please select another time or vehicle type.`
-        });
-        return;
-      }
-    }
+    if (!isFormValid) return;
 
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: '' });
 
-    const bookingDetails = {
-      type: isScheduled ? 'Scheduled Ride' : 'Immediate Ride',
-      pickupLocation: formData.pickupLocation,
-      destination: formData.destination,
-      dateTime: isScheduled && selectedDateTime ? selectedDateTime.toISOString() : 'As soon as possible',
-      phone: formData.phone,
-      email: formData.email,
-      vehicleType: formData.vehicleType
-    };
-
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
     try {
-      const response = await fetch(`${apiUrl}/api/book-ride`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingDetails),
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Save the booked slot if it's a scheduled ride
-        if (isScheduled && selectedDateTime) {
-          addBookedSlot(selectedDateTime);
-        }
-
-        setBookingNumber(data.bookingNumber);
+      const route = await calculateRoute();
+      if (!route) {
         setSubmitStatus({
-          type: 'success',
-          message: data.message || 'Booking confirmed! Check your email (spam folder) for details.'
+          type: 'error',
+          message: 'Fehler bei der Routenberechnung. Bitte versuchen Sie es erneut.'
         });
-
-        // Auto-hide success message after 10 seconds
-        setTimeout(() => {
-          setSubmitStatus({ type: null, message: '' });
-          setBookingNumber('');
-        }, 10000);
-
-        setFormData({
-          pickupLocation: '',
-          destination: '',
-          phone: '',
-          email: '',
-          vehicleType: 'taxi'
-        });
-        setSelectedDateTime(null);
-      } else {
-        throw new Error(data.error || 'Failed to submit booking');
+        return;
       }
+
+      const { distance, duration } = route;
+      const price = calculatePrice(distance, formData.vehicleType);
+
+      const bookingDetails = {
+        startAddress: formData.pickupLocation,
+        endAddress: formData.destination,
+        distance,
+        duration,
+        vehicleType: formData.vehicleType,
+        isScheduled: isScheduled,
+        date: isScheduled && selectedDateTime ? selectedDateTime.toISOString().split('T')[0] : null,
+        time: isScheduled && selectedDateTime ? selectedDateTime.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }) : null,
+        phone: formData.phone,
+        email: formData.email,
+        price
+      };
+
+      navigate('/booking-overview', { state: { bookingDetails } });
     } catch (error) {
+      console.error('Error calculating route:', error);
       setSubmitStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'Failed to submit booking. Please try again.'
+        message: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
       });
-      console.error('Booking submission error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   const handleCalculate = async () => {
@@ -404,10 +365,53 @@ export default function BookingForm() {
     }
   };
 
+  const calculateRoute = async () => {
+    const service = new google.maps.DirectionsService();
+    try {
+      const result = await new Promise((resolve, reject) => {
+        service.route(
+          {
+            origin: formData.pickupLocation,
+            destination: formData.destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+          },
+          (result, status) => {
+            if (status === 'OK' && result) {
+              resolve(result);
+            } else {
+              reject(new Error('Route konnte nicht berechnet werden'));
+            }
+          }
+        );
+      }) as google.maps.DirectionsResult;
+
+      const route = result.routes[0];
+      if (!route || !route.legs[0]) {
+        throw new Error('Keine gültige Route gefunden');
+      }
+
+      const distance = route.legs[0].distance?.value || 0; // in meters
+      const duration = route.legs[0].duration?.text || '';
+      const distanceInKm = distance / 1000;
+
+      return { distance: distanceInKm, duration };
+    } catch (error) {
+      console.error('Error calculating route:', error);
+      throw error;
+    }
+  };
+
+  const calculatePrice = (distance: number, vehicleType: string) => {
+    const baseFare = 3.50;
+    const pricePerKm = 2.20;
+    const totalPrice = baseFare + (distance * pricePerKm);
+    return totalPrice;
+  };
+
   return (
     <div>
       {isLoaded ? (
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6">
           {submitStatus.type && (
             <div className={`mb-4 p-4 rounded-md ${
               submitStatus.type === 'success'
@@ -608,17 +612,6 @@ export default function BookingForm() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="submit"
-                disabled={isSubmitting || !isFormValid}
-                className={`flex-1 bg-yellow-500 text-black py-3 px-6 rounded-lg font-semibold transition-colors ${
-                  isSubmitting || !isFormValid 
-                    ? 'opacity-50 cursor-not-allowed bg-gray-400' 
-                    : 'hover:bg-yellow-400'
-                }`}
-              >
-                {isSubmitting ? 'Booking...' : 'Buchen'}
-              </button>
               <button
                 type="button"
                 onClick={handleCalculate}

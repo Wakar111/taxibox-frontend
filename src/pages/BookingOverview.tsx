@@ -24,6 +24,49 @@ interface BookingDetails {
   };
 }
 
+interface BookedSlot {
+  time: string;
+  vehicleType: string;
+}
+
+const MAX_BOOKINGS_PER_SLOT = 3;
+
+const getBookingCount = (date: string, time: string, vehicleType: string): number => {
+  try {
+    const bookedSlots: BookedSlot[] = JSON.parse(localStorage.getItem('bookedSlots') || '[]');
+    const targetDateTime = new Date(`${date}T${time}`);
+    
+    return bookedSlots.filter(slot => {
+      const bookedTime = new Date(slot.time);
+      return (
+        bookedTime.getFullYear() === targetDateTime.getFullYear() &&
+        bookedTime.getMonth() === targetDateTime.getMonth() &&
+        bookedTime.getDate() === targetDateTime.getDate() &&
+        bookedTime.getHours() === targetDateTime.getHours() &&
+        bookedTime.getMinutes() === targetDateTime.getMinutes() &&
+        slot.vehicleType === vehicleType
+      );
+    }).length;
+  } catch (error) {
+    console.error('Error checking booking count:', error);
+    return 0;
+  }
+};
+
+const addBookedSlot = (date: string, time: string, vehicleType: string) => {
+  try {
+    const bookedSlots: BookedSlot[] = JSON.parse(localStorage.getItem('bookedSlots') || '[]');
+    const dateTime = new Date(`${date}T${time}`);
+    bookedSlots.push({
+      time: dateTime.toISOString(),
+      vehicleType: vehicleType
+    });
+    localStorage.setItem('bookedSlots', JSON.stringify(bookedSlots));
+  } catch (error) {
+    console.error('Error adding booked slot:', error);
+  }
+};
+
 const mapContainerStyle = {
   width: '100%',
   height: '400px',
@@ -83,6 +126,24 @@ export default function BookingOverview() {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: '' });
 
+    // Check booking limit for scheduled rides
+    if (bookingDetails.isScheduled && bookingDetails.date && bookingDetails.time) {
+      const bookingCount = getBookingCount(
+        bookingDetails.date,
+        bookingDetails.time,
+        bookingDetails.vehicleType
+      );
+      
+      if (bookingCount >= MAX_BOOKINGS_PER_SLOT) {
+        setSubmitStatus({
+          type: 'error',
+          message: `Diese Zeit ist für ${bookingDetails.vehicleType} bereits ausgebucht. Bitte wählen Sie eine andere Zeit oder ein anderes Fahrzeug.`
+        });
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     // Handle date/time string - use 'Sofort' for immediate bookings
     const dateTimeString = bookingDetails.isScheduled && bookingDetails.date && bookingDetails.time
         ? `${bookingDetails.date} ${bookingDetails.time}`
@@ -118,25 +179,25 @@ export default function BookingOverview() {
       const data = await response.json();
       
       if (response.ok) {
+        // Save the booked slot if it's a scheduled ride
+        if (bookingDetails.isScheduled && bookingDetails.date && bookingDetails.time) {
+          addBookedSlot(bookingDetails.date, bookingDetails.time, bookingDetails.vehicleType);
+        }
+
         setBookingNumber(data.bookingNumber);
         setSubmitStatus({
           type: 'success',
-          message: `Buchung erfolgreich bestätigt! Ihre Fahrt-Nummer ist: ${data.bookingNumber}. Eine Bestätigungs-E-Mail wurde an ${bookingDetails.email} gesendet.`
+          message: `Buchung erfolgreich bestätigt! Ihre Fahrt-Nummer ist: ${data.bookingNumber}. Überprüfen Sie Ihre E-Mail (Spam-Ordner) für Details.`
         });
 
-        // Show success message for 5 seconds before navigating
+        // Auto-hide success message after 10 seconds
         setTimeout(() => {
           setSubmitStatus({ type: null, message: '' });
           setBookingNumber('');
-          navigate('/', { 
-            state: { 
-              bookingSuccess: true,
-              bookingNumber: data.bookingNumber 
-            } 
-          });
-        }, 5000);
+          navigate('/');
+        }, 10000);
       } else {
-        throw new Error(data.error || 'Buchung konnte nicht durchgeführt werden');
+        throw new Error(data.error || 'Buchung fehlgeschlagen');
       }
     } catch (error) {
       setSubmitStatus({
@@ -173,184 +234,118 @@ export default function BookingOverview() {
             </p>
           </div>
 
-          {/* Google Map */}
-          <div className="max-w-4xl mx-auto mb-8">
-            <GoogleMap
-              mapContainerStyle={mapContainerStyle}
-              zoom={12}
-              center={center}
-              options={{
-                styles: [
-                  {
-                    elementType: "geometry",
-                    stylers: [{ color: "#242f3e" }]
-                  },
-                  {
-                    elementType: "labels.text.stroke",
-                    stylers: [{ color: "#242f3e" }]
-                  },
-                  {
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#746855" }]
-                  },
-                  {
-                    featureType: "administrative.locality",
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#d59563" }]
-                  },
-                  {
-                    featureType: "poi",
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#d59563" }]
-                  },
-                  {
-                    featureType: "poi.park",
-                    elementType: "geometry",
-                    stylers: [{ color: "#263c3f" }]
-                  },
-                  {
-                    featureType: "poi.park",
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#6b9a76" }]
-                  },
-                  {
-                    featureType: "road",
-                    elementType: "geometry",
-                    stylers: [{ color: "#38414e" }]
-                  },
-                  {
-                    featureType: "road",
-                    elementType: "geometry.stroke",
-                    stylers: [{ color: "#212a37" }]
-                  },
-                  {
-                    featureType: "road",
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#9ca5b3" }]
-                  },
-                  {
-                    featureType: "road.highway",
-                    elementType: "geometry",
-                    stylers: [{ color: "#746855" }]
-                  },
-                  {
-                    featureType: "road.highway",
-                    elementType: "geometry.stroke",
-                    stylers: [{ color: "#1f2835" }]
-                  },
-                  {
-                    featureType: "road.highway",
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#f3d19c" }]
-                  },
-                  {
-                    featureType: "transit",
-                    elementType: "geometry",
-                    stylers: [{ color: "#2f3948" }]
-                  },
-                  {
-                    featureType: "transit.station",
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#d59563" }]
-                  },
-                  {
-                    featureType: "water",
-                    elementType: "geometry",
-                    stylers: [{ color: "#17263c" }]
-                  },
-                  {
-                    featureType: "water",
-                    elementType: "labels.text.fill",
-                    stylers: [{ color: "#515c6d" }]
-                  },
-                  {
-                    featureType: "water",
-                    elementType: "labels.text.stroke",
-                    stylers: [{ color: "#17263c" }]
-                  }
-                ]
-              }}
-            >
-              {directions && (
+          {/* Map */}
+          {isLoaded && directions && (
+            <div className="mb-8">
+              <h2 className="text-xl font-semibold mb-4 text-white">Route</h2>
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                zoom={12}
+                center={center}
+                options={{
+                  styles: [
+                    {
+                      elementType: "geometry",
+                      stylers: [{ color: "#242f3e" }]
+                    },
+                    {
+                      elementType: "labels.text.stroke",
+                      stylers: [{ color: "#242f3e" }]
+                    },
+                    {
+                      elementType: "labels.text.fill",
+                      stylers: [{ color: "#746855" }]
+                    }
+                  ]
+                }}
+              >
                 <DirectionsRenderer
                   directions={directions}
                   options={{
                     polylineOptions: {
-                      strokeColor: '#F59E0B',
+                      strokeColor: "#FFD700",
                       strokeWeight: 4
                     }
                   }}
                 />
-              )}
-            </GoogleMap>
-          </div>
+              </GoogleMap>
+            </div>
+          )}
 
-          <div className="max-w-4xl mx-auto bg-zinc-800/50 backdrop-blur-sm p-8 rounded-xl">
-            <div className="grid grid-cols-2 gap-8">
-              {/* Left Column - Fahrtdetails */}
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Fahrtdetails</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-gray-400">Startadresse:</label>
-                    <p>{bookingDetails.startAddress}</p>
-                  </div>
-                  <div>
-                    <label className="text-gray-400">Zieladresse:</label>
-                    <p>{bookingDetails.endAddress}</p>
-                  </div>
-                  <div>
-                    <label className="text-gray-400">Abfahrt:</label>
-                    <p>{bookingDetails.isScheduled 
+          {/* Booking Details */}
+          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-white">Buchungsdetails</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-gray-400 block">Abholung:</label>
+                  <p className="text-white">{bookingDetails.startAddress}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400 block">Ziel:</label>
+                  <p className="text-white">{bookingDetails.endAddress}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400 block">Entfernung:</label>
+                  <p className="text-white">{bookingDetails.distance.toFixed(2)} km</p>
+                </div>
+                <div>
+                  <label className="text-gray-400 block">Fahrtdauer:</label>
+                  <p className="text-white">{bookingDetails.duration}</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-gray-400 block">Fahrzeugtyp:</label>
+                  <p className="text-white">{bookingDetails.vehicleType}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400 block">Datum/Zeit:</label>
+                  <p className="text-white">
+                    {bookingDetails.isScheduled
                       ? `${bookingDetails.date} ${bookingDetails.time}`
                       : 'Sofort'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-gray-400">Fahrzeugtyp:</label>
-                    <p>{bookingDetails.vehicleType}</p>
-                  </div>
+                  </p>
                 </div>
-              </div>
-
-              {/* Right Column - Preisdetails */}
-              <div>
-                <h2 className="text-2xl font-bold mb-6">Preisdetails</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-gray-400">Entfernung:</label>
-                    <p className="text-right">{bookingDetails.distance.toFixed(1)} km</p>
-                  </div>
-                  <div>
-                    <label className="text-gray-400">Fahrtzeit:</label>
-                    <p className="text-right">{bookingDetails.duration}</p>
-                  </div>
-                  <div>
-                    <label className="text-gray-400">Grundpreis:</label>
-                    <p className="text-right">{bookingDetails.price.base.toFixed(2)}€</p>
-                  </div>
-                  <div>
-                    <label className="text-gray-400">Kilometerpreis:</label>
-                    <p className="text-right">{bookingDetails.price.perKm.toFixed(2)}€</p>
-                  </div>
-                  <div className="pt-4 border-t border-zinc-700">
-                    <label className="text-yellow-500 font-bold">Gesamtpreis:</label>
-                    <p className="text-right text-yellow-500 font-bold">{bookingDetails.price.total.toFixed(2)}€</p>
-                  </div>
+                <div>
+                  <label className="text-gray-400 block">Telefon:</label>
+                  <p className="text-white">{bookingDetails.phone}</p>
                 </div>
-                <p className="text-sm text-gray-400 mt-4 italic">
-                  Hinweis: Preis und Fahrtzeit sind Schätzungen und können sich aufgrund von Verkehr, Wetter und anderen Faktoren ändern.
-                </p>
+                <div>
+                  <label className="text-gray-400 block">E-Mail:</label>
+                  <p className="text-white">{bookingDetails.email}</p>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div className="flex justify-between mt-8">
-              <button
-                onClick={() => navigate(-1)}
-                className="px-8 py-2 bg-zinc-700 text-white rounded hover:bg-zinc-600 transition"
-              >
-                Zurück
-              </button>
+          {/* Price Summary */}
+          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg mb-8">
+            <h2 className="text-xl font-semibold mb-4 text-white">Preis Übersicht</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-gray-300">
+                <span>Grundpreis:</span>
+                <span>{bookingDetails.price.base.toFixed(2)}€</span>
+              </div>
+              <div className="flex justify-between items-center text-gray-300">
+                <span>Preis pro km:</span>
+                <span>{bookingDetails.price.perKm.toFixed(2)}€</span>
+              </div>
+              <div className="flex justify-between items-center text-white font-semibold text-lg pt-2 border-t border-gray-700">
+                <span>Gesamtpreis:</span>
+                <span>{bookingDetails.price.total.toFixed(2)}€</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between mt-8">
+            <button
+              onClick={() => navigate(-1)}
+              className="px-8 py-2 bg-zinc-700 text-white rounded hover:bg-zinc-600 transition"
+            >
+              Zurück
+            </button>
+            {submitStatus.type !== 'success' && (
               <button
                 onClick={handleBookingConfirmation}
                 disabled={isSubmitting}
@@ -362,25 +357,25 @@ export default function BookingOverview() {
               >
                 {isSubmitting ? 'Wird gebucht...' : 'Buchung bestätigen'}
               </button>
-            </div>
-
-            {submitStatus.type && (
-              <div 
-                className={`mt-8 p-6 rounded-lg text-center ${
-                  submitStatus.type === 'success'
-                    ? 'bg-green-500/10 text-green-500 border border-green-500/20'
-                    : 'bg-red-500/10 text-red-500 border border-red-500/20'
-                }`}
-              >
-                <p className="text-lg font-medium">{submitStatus.message}</p>
-                {submitStatus.type === 'success' && (
-                  <p className="mt-4 text-sm text-gray-400">
-                    Sie werden in Kürze zur Startseite weitergeleitet...
-                  </p>
-                )}
-              </div>
             )}
           </div>
+
+          {submitStatus.type && (
+            <div 
+              className={`mt-8 p-6 rounded-lg text-center ${
+                submitStatus.type === 'success'
+                  ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                  : 'bg-red-500/10 text-red-500 border border-red-500/20'
+              }`}
+            >
+              <p className="text-lg font-medium">{submitStatus.message}</p>
+              {submitStatus.type === 'success' && (
+                <p className="mt-4 text-sm text-gray-400">
+                  Sie werden in Kürze zur Startseite weitergeleitet...
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
