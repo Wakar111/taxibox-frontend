@@ -93,7 +93,6 @@ export default function BookingOverview() {
 
   // Debug log to check received data
   useEffect(() => {
-    console.log('Received booking details:', bookingDetails);
   }, [bookingDetails]);
 
   // Scroll to top when component mounts
@@ -163,8 +162,6 @@ export default function BookingOverview() {
       duration: bookingDetails.duration
     };
 
-    console.log('Sending booking data:', bookingData);
-    
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
     try {

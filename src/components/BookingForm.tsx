@@ -92,19 +92,6 @@ export default function BookingForm() {
     }
   };
 
-  const addBookedSlot = (time: Date) => {
-    try {
-      const bookedSlots: BookedSlot[] = JSON.parse(localStorage.getItem('bookedSlots') || '[]');
-      bookedSlots.push({
-        time: time.toISOString(),
-        vehicleType: formData.vehicleType
-      });
-      localStorage.setItem('bookedSlots', JSON.stringify(bookedSlots));
-    } catch (error) {
-      console.error('Error saving booked slot:', error);
-    }
-  };
-
   const timeClassName = (time: Date) => {
     const count = getBookingCount(time, formData.vehicleType);
     if (count >= MAX_BOOKINGS_PER_SLOT) {
@@ -185,55 +172,6 @@ export default function BookingForm() {
     return !isTimeSlotBooked(time);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isFormValid) return;
-
-    setIsSubmitting(true);
-    setSubmitStatus({ type: null, message: '' });
-
-    try {
-      const route = await calculateRoute();
-      if (!route) {
-        setSubmitStatus({
-          type: 'error',
-          message: 'Fehler bei der Routenberechnung. Bitte versuchen Sie es erneut.'
-        });
-        return;
-      }
-
-      const { distance, duration } = route;
-      const price = calculatePrice(distance, formData.vehicleType);
-
-      const bookingDetails = {
-        startAddress: formData.pickupLocation,
-        endAddress: formData.destination,
-        distance,
-        duration,
-        vehicleType: formData.vehicleType,
-        isScheduled: isScheduled,
-        date: isScheduled && selectedDateTime ? selectedDateTime.toISOString().split('T')[0] : null,
-        time: isScheduled && selectedDateTime ? selectedDateTime.toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }) : null,
-        phone: formData.phone,
-        email: formData.email,
-        price
-      };
-
-      navigate('/booking-overview', { state: { bookingDetails } });
-    } catch (error) {
-      console.error('Error calculating route:', error);
-      setSubmitStatus({
-        type: 'error',
-        message: 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleCalculate = async () => {
     if (!validateForm()) {
@@ -290,12 +228,6 @@ export default function BookingForm() {
             hour12: false
           })
         : null;
-
-      // Log the values before navigation
-      console.log('Scheduled:', isScheduled);
-      console.log('Selected DateTime:', selectedDateTime);
-      console.log('Formatted Date:', bookingDate);
-      console.log('Formatted Time:', bookingTime);
 
       navigate('/booking-overview', {
         state: {
@@ -363,49 +295,6 @@ export default function BookingForm() {
         destination: place.formatted_address || '',
       }));
     }
-  };
-
-  const calculateRoute = async () => {
-    const service = new google.maps.DirectionsService();
-    try {
-      const result = await new Promise((resolve, reject) => {
-        service.route(
-          {
-            origin: formData.pickupLocation,
-            destination: formData.destination,
-            travelMode: google.maps.TravelMode.DRIVING,
-          },
-          (result, status) => {
-            if (status === 'OK' && result) {
-              resolve(result);
-            } else {
-              reject(new Error('Route konnte nicht berechnet werden'));
-            }
-          }
-        );
-      }) as google.maps.DirectionsResult;
-
-      const route = result.routes[0];
-      if (!route || !route.legs[0]) {
-        throw new Error('Keine gültige Route gefunden');
-      }
-
-      const distance = route.legs[0].distance?.value || 0; // in meters
-      const duration = route.legs[0].duration?.text || '';
-      const distanceInKm = distance / 1000;
-
-      return { distance: distanceInKm, duration };
-    } catch (error) {
-      console.error('Error calculating route:', error);
-      throw error;
-    }
-  };
-
-  const calculatePrice = (distance: number, vehicleType: string) => {
-    const baseFare = 3.50;
-    const pricePerKm = 2.20;
-    const totalPrice = baseFare + (distance * pricePerKm);
-    return totalPrice;
   };
 
   return (
