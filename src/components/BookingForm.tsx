@@ -57,9 +57,10 @@ export default function BookingForm() {
   const MAX_BOOKINGS_PER_SLOT = 3;
 
   const vehicleTypes = [
-    { value: 'taxi', label: 'Taxi (max 4 persons)' },
-    { value: 'mietwagen', label: 'Mietwagen (max 4 Persons)' },
-    { value: 'minivan', label: 'Minivan (max 8 Persons)' }
+    { value: 'taxi', label: 'Taxi (max 4 personen)' },
+    { value: 'taxi-gross', label: 'Großraumtaxi(max 6 personen)' },
+    { value: 'mietwagen', label: 'Mietwagen (max 4 Personen)' },
+    { value: 'minivan', label: 'Minivan (max 8 Personen)' }
   ];
 
   const getBookingCount = (time: Date, vehicleType: string): number => {
@@ -212,9 +213,27 @@ export default function BookingForm() {
       const distanceInKm = distance / 1000;
 
       // Calculate price
-      const baseFare = 3.50;
-      const pricePerKm = 2.20;
-      const totalPrice = baseFare + (distanceInKm * pricePerKm);
+      let base = 0;
+      let perKm = 0;
+
+      switch (formData.vehicleType) {
+        case 'taxi':
+          base = 4; // Base fare for taxi
+          perKm = distanceInKm <= 4 ? (distanceInKm * 2.50) : (4 * 2.50) + ((distanceInKm - 4) * 1.80);
+          break;
+        case 'taxi-gross':
+          base = 4 + 5; // Base fare + surcharge for gross taxi
+          perKm = distanceInKm <= 4 ? (distanceInKm * 2.50) : (4 * 2.50) + ((distanceInKm - 4) * 1.80);
+          break;
+        case 'mietwagen':
+          perKm = distanceInKm * 1.60;
+          break;
+        case 'minivan':
+          perKm = distanceInKm * 2.00;
+          break;
+      }
+
+      const totalPrice = base + perKm;
 
       // Format date and time if scheduled
       const bookingDate = isScheduled && selectedDateTime 
@@ -244,8 +263,8 @@ export default function BookingForm() {
             email: formData.email,
             vehicleType: formData.vehicleType,
             price: {
-              base: baseFare,
-              perKm: pricePerKm * distanceInKm,
+              base: base,
+              perKm: perKm,
               total: totalPrice
             }
           }

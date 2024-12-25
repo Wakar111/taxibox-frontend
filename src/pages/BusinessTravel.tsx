@@ -4,12 +4,14 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const pricingTiers = [
-  { service: 'Hourly Rate', price: '35€/hour' },
-  { service: 'Half Day (4 hours)', price: '130€' },
-  { service: 'Full Day (8 hours)', price: '250€' },
-  { service: 'Airport Transfer', price: 'From 40€' },
-  { service: 'Corporate Events', price: 'Custom Rate' },
-  { service: 'Multi-City Travel', price: 'Custom Rate' },
+  { service: 'Frankfurt Flughafen', price: 'Ab 40€' },
+  { service: 'Hahn Flughafen', price: 'Ab 120€' },
+  { service: 'Halben Tag (4 Stunden)', price: 'Ab 150€' },
+  { service: 'Ganzen Tag (8 Stunden)', price: 'Ab 250€' },
+  { service: 'Krankenfahrten', price: 'Individueller Tarif' },
+  { service: 'Multi-City Travel Fahrten', price: 'Ab 1,60€ pro Km' },
+  { service: 'BusinessTravel', price: 'Ab 60€ pro Stunde' },
+  { service: 'VIP Travel', price: 'Ab 80€ pro Stunde' }
 ];
 
 export default function BusinessTravel() {
@@ -51,7 +53,7 @@ export default function BusinessTravel() {
 
           <div className="mt-12 text-center">
             <button
-              onClick={handleBookNow}
+              onClick={() => window.open('https://wa.me/4915259606727', '_blank')}
               className="inline-block bg-yellow-500 text-black px-8 py-3 rounded-full font-semibold hover:bg-yellow-400 transition"
             >
               Book Now
