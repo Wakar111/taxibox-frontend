@@ -39,7 +39,7 @@ export default function Home() {
       <div className="h-screen relative flex items-center justify-center">
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1626668893632-6f3a4466d22f?auto=format&fit=crop&q=80"
+            src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80"
             alt="Mercedes Luxury Car"
             className="w-full h-full object-cover opacity-50"
           />
@@ -91,7 +91,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8">
             <Link to="/taxi-rechner" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
-                src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80"
+                src="https://images.unsplash.com/photo-1512978748615-0bfcbdc57bc3?auto=format&fit=crop&q=80"
                 alt="Flughafentransfer"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
@@ -101,7 +101,7 @@ export default function Home() {
             </Link>
             <Link to="/business-travel" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
-                src="https://images.unsplash.com/photo-1611448746128-7c39e03b71e4?auto=format&fit=crop&q=80"
+                src="https://plus.unsplash.com/premium_photo-1664478072478-549adcf0d953?auto=format&fit=crop&q=80"
                 alt="Geschäftsreisen"
                 className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
               />
@@ -112,7 +112,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       <section id="price-table" className="bg-zinc-900 text-white">
         {/* Standard Taxi Rates */}
        <div className="max-w-4xl mx-auto mb-16">

@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
       <Navbar />
       <main className="flex-grow">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">Datenschutzerklärung</h1>
+          <h1 className="text-3xl font-bold mb-6 mt-10">Datenschutzerklärung</h1>
           
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Verantwortlicher</h2>
