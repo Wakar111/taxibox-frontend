@@ -325,7 +325,7 @@ export default function BookingOverview() {
                 <span>{bookingDetails.price.base.toFixed(2)}€</span>
               </div>
               <div className="flex justify-between items-center text-gray-300">
-                <span>Preis pro km:</span>
+                <span>Km Preis:</span>
                 <span>{bookingDetails.price.perKm.toFixed(2)}€</span>
               </div>
               <div className="flex justify-between items-center text-white font-semibold text-lg pt-2 border-t border-gray-700">

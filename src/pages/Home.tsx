@@ -6,6 +6,14 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BookingForm from '../components/BookingForm';
 
+const standardTaxiRates = [
+  { type: 'Grundpreis', price: '4.00€' },
+  { type: 'bis 4. Kilometer', price: '2.50€' },
+  { type: 'Je weiteren Kilometer', price: '1.80€' },
+  { type: 'Wartezeit pro Stunde', price: '40.00€' },
+  { type: 'Großraumumschalg (4-6 Personen)', price: '5.00€' },
+];
+
 export default function Home() {
   const location = useLocation();
 
@@ -103,6 +111,23 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
+      
+      <section id="price-table" className="bg-zinc-900 text-white">
+        {/* Standard Taxi Rates */}
+       <div className="max-w-4xl mx-auto mb-16">
+            <h2 className="text-2xl font-bold mb-6 text-center">Standard Taxitarife</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {standardTaxiRates.map((rate) => (
+                <div key={rate.type} className="bg-zinc-800 p-6 rounded-lg">
+                  <div className="flex flex-col items-center text-center">
+                    <span className="text-lg mb-2">{rate.type}</span>
+                    <span className="text-2xl font-bold text-yellow-500">{rate.price}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
       </section>
 
       {/* Booking Section */}
