@@ -13,7 +13,6 @@ const navigationItems = [
 ];
 
 const scrollItems = [
-  { id: 'about', label: 'Über uns' },
   { id: 'services', label: 'Angebote' },
   { id: 'booking', label: 'Jetzt buchen' }
 ];
