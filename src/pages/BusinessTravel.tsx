@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -52,12 +52,22 @@ export default function BusinessTravel() {
           </div>
 
           <div className="mt-12 text-center">
-            <button
-              onClick={() => window.open('https://wa.me/4915259606727', '_blank')}
-              className="inline-block bg-yellow-500 text-black px-8 py-3 rounded-full font-semibold hover:bg-yellow-400 transition"
-            >
-              Book Now
-            </button>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link 
+                to="/?booking=true"
+                className="bg-yellow-500 text-black px-8 py-3 rounded-full font-semibold hover:bg-yellow-400 transition text-center"
+              >
+                Jetzt Buchen
+              </Link>
+              <a 
+                href="https://wa.me/4915259606727"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-green-600 px-8 py-3 rounded-full font-semibold hover:bg-green-500 transition text-center"
+              >
+                WhatsApp
+              </a>
+            </div>
           </div>
 
           <div className="mt-12 bg-zinc-800 p-8 rounded-lg max-w-4xl mx-auto">

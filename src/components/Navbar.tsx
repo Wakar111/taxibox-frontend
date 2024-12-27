@@ -9,7 +9,7 @@ interface NavbarProps {
 
 const navigationItems = [
   { path: '/', label: 'Startseite' },
-  { path: '/taxi-rechner', label: 'Taxirechner' }
+  { path: '/about', label: 'Über uns' }
 ];
 
 const scrollItems = [

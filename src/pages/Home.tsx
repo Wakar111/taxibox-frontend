@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Shield, Star, Clock, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -7,24 +7,26 @@ import Footer from '../components/Footer';
 import BookingForm from '../components/BookingForm';
 
 const standardTaxiRates = [
-  { type: 'Grundpreis', price: '4.00€' },
+  { type: 'Taxi Grundpreis', price: '4.00€' },
   { type: 'bis 4. Kilometer', price: '2.50€' },
   { type: 'Je weiteren Kilometer', price: '1.80€' },
   { type: 'Wartezeit pro Stunde', price: '40.00€' },
-  { type: 'Großraumumschalg (4-6 Personen)', price: '5.00€' },
+  { type: 'Großraum (4€ Grundpreis + 5€ Umschlag)', price: '9.00€' },
 ];
 
 export default function Home() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    if (location.state?.scrollToBooking) {
+    // Check for both state and URL parameter
+    if (location.state?.scrollToBooking || searchParams.get('booking') === 'true') {
       const bookingSection = document.getElementById('booking');
       if (bookingSection) {
         bookingSection.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [location.state]);
+  }, [location.state, searchParams]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -89,14 +91,14 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-bold mb-12 text-center">Unsere Angebote</h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <Link to="/taxi-rechner" className="relative h-64 rounded-xl overflow-hidden group">
+            <Link to="/about" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
                 src="https://images.unsplash.com/photo-1512978748615-0bfcbdc57bc3?auto=format&fit=crop&q=80"
                 alt="Flughafentransfer"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <h3 className="text-2xl font-bold">Taxirechner</h3>
+                <h3 className="text-2xl font-bold">Unsere Leistungen</h3>
               </div>
             </Link>
             <Link to="/business-travel" className="relative h-64 rounded-xl overflow-hidden group">

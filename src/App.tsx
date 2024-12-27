@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import BusinessTravel from './pages/BusinessTravel';
-import Taxirechner from './pages/Taxirechner';
+import AboutUs from './pages/About';
 import CookiePolicy from './pages/CookiePolicy';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import BookingOverview from './pages/BookingOverview';
@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/business-travel" element={<BusinessTravel />} />
-        <Route path="/taxi-rechner" element={<Taxirechner />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/booking-overview" element={<BookingOverview />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />

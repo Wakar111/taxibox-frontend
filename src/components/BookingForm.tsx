@@ -215,14 +215,13 @@ export default function BookingForm() {
       // Calculate price
       let base = 0;
       let perKm = 0;
-
       switch (formData.vehicleType) {
         case 'taxi':
           base = 4; // Base fare for taxi
           perKm = distanceInKm <= 4 ? (distanceInKm * 2.50) : (4 * 2.50) + ((distanceInKm - 4) * 1.80);
           break;
         case 'taxi-gross':
-          base = 4 + 5; // Base fare + surcharge for gross taxi
+          base = 4 + 5; // Base fare for grossraum-taxi
           perKm = distanceInKm <= 4 ? (distanceInKm * 2.50) : (4 * 2.50) + ((distanceInKm - 4) * 1.80);
           break;
         case 'mietwagen':
