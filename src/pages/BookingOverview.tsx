@@ -149,7 +149,7 @@ export default function BookingOverview() {
         : 'Sofort';
     
     const bookingData = {
-      type: bookingDetails.isScheduled ? 'Scheduled Ride' : 'Immediate Ride',
+      type: bookingDetails.isScheduled ? 'Geplante Fahrt' : 'Sofortige Fahrt',
       pickupLocation: bookingDetails.startAddress,
       destination: bookingDetails.endAddress,
       dateTime: dateTimeString,
