@@ -6,6 +6,7 @@ import "../styles/datepicker.css";
 import { Autocomplete } from '@react-google-maps/api';
 import { useGoogleMaps } from '../contexts/GoogleMapsContext';
 import { useNavigate } from 'react-router-dom';
+import CookieConsent from './CookieConsent';
 
 const MAINZ_CENTER = { lat: 50.0, lng: 8.2711 }; // Mainz center coordinates
 const WIESBADEN_CENTER = { lat: 50.0782, lng: 8.2397 }; // Wiesbaden center coordinates
@@ -14,6 +15,9 @@ const MAX_RADIUS = 20000; // 20km radius in meters
 export default function BookingForm() {
   const { isLoaded } = useGoogleMaps();
   const navigate = useNavigate();
+  const [hasConsent, setHasConsent] = useState(() => {
+    return localStorage.getItem('googleMapsConsent') === 'accepted';
+  });
 
   // Function to check if a location is within radius of either Mainz or Wiesbaden
   const isWithinServiceArea = (location: google.maps.LatLng) => {
@@ -315,228 +319,247 @@ export default function BookingForm() {
     }
   };
 
+  // If user hasn't given consent, show the consent dialog
+  if (!hasConsent) {
+    return (
+      <div className="p-6 bg-zinc-800 rounded-lg">
+        <h3 className="text-xl font-semibold mb-4">Taxi Buchung</h3>
+        <CookieConsent
+          onAccept={() => {
+            setHasConsent(true);
+            localStorage.setItem('googleMapsConsent', 'accepted');
+          }}
+          onDecline={() => {
+            navigate('/');
+          }}
+        />
+      </div>
+    );
+  }
+
+  // If maps haven't loaded yet
+  if (!isLoaded) {
+    return <div className="p-6 text-center">Loading...</div>;
+  }
+
   return (
     <div>
-      {isLoaded ? (
-        <form className="space-y-6">
-          {submitStatus.type && (
-            <div className={`mb-4 p-4 rounded-md ${
-              submitStatus.type === 'success'
-                ? 'bg-green-50 border border-green-200'
-                : 'bg-red-50 border border-red-200'
+      <form className="space-y-6">
+        {submitStatus.type && (
+          <div className={`mb-4 p-4 rounded-md ${
+            submitStatus.type === 'success'
+              ? 'bg-green-50 border border-green-200'
+              : 'bg-red-50 border border-red-200'
+          }`}>
+            <div className={`text-sm ${
+              submitStatus.type === 'success' ? 'text-green-800' : 'text-red-800'
             }`}>
-              <div className={`text-sm ${
-                submitStatus.type === 'success' ? 'text-green-800' : 'text-red-800'
-              }`}>
-                {submitStatus.message}
-                {submitStatus.type === 'success' && bookingNumber && (
-                  <div className="mt-2 p-3 bg-white rounded-md border border-green-200">
-                    <p className="font-semibold">Booking Number:</p>
-                    <p className="text-lg font-mono">{bookingNumber}</p>
-                    <p className="text-xs mt-1 text-gray-600">
-                      Please save this number for your reference
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg space-y-6">
-            {/* Booking Type Selection */}
-            <div className="flex items-center justify-center space-x-4">
-              <button
-                type="button"
-                onClick={() => handleSchedulingChange(false)}
-                className={`px-6 py-2 rounded-full transition ${
-                  !isScheduled
-                    ? 'bg-yellow-500 text-black font-semibold'
-                    : 'bg-zinc-700 text-white hover:bg-zinc-600'
-                }`}
-              >
-                Sofort fahren
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSchedulingChange(true)}
-                className={`px-6 py-2 rounded-full transition ${
-                  isScheduled
-                    ? 'bg-yellow-500 text-black font-semibold'
-                    : 'bg-zinc-700 text-white hover:bg-zinc-600'
-                }`}
-              >
-                Fahrt buchen
-              </button>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block mb-2">Abholort *</label>
-                <div className="relative">
-                  <Autocomplete
-                    onLoad={onPickupLoad}
-                    onPlaceChanged={onPickupPlaceChanged}
-                    options={{
-                      componentRestrictions: { country: 'de' },
-                      types: ['address'],
-                      bounds: {
-                        north: Math.max(MAINZ_CENTER.lat, WIESBADEN_CENTER.lat) + 0.2,
-                        south: Math.min(MAINZ_CENTER.lat, WIESBADEN_CENTER.lat) - 0.2,
-                        east: Math.max(MAINZ_CENTER.lng, WIESBADEN_CENTER.lng) + 0.2,
-                        west: Math.min(MAINZ_CENTER.lng, WIESBADEN_CENTER.lng) - 0.2,
-                      },
-                      strictBounds: false
-                    }}
-                  >
-                    <input
-                      type="text"
-                      name="pickupLocation"
-                      value={formData.pickupLocation}
-                      onChange={(e) => {
-                        setFormData({ ...formData, pickupLocation: e.target.value });
-                        if (e.target.value === '') {
-                          setPickupError('');
-                        }
-                      }}
-                      className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border ${
-                        pickupError ? 'border-red-500' : 'border-black'
-                      }`}
-                      placeholder="Abholadresse eingeben"
-                      required
-                    />
-                  </Autocomplete>
-                  <MapPin className="absolute left-3 top-3 text-gray-400" />
-                </div>
-                {pickupError && (
-                  <p className="mt-2 text-sm text-red-500">
-                    {pickupError}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block mb-2">Zielort *</label>
-                <div className="relative">
-                  <Autocomplete
-                    onLoad={onDestinationLoad}
-                    onPlaceChanged={onDestinationPlaceChanged}
-                    options={{
-                      componentRestrictions: { country: 'de' },
-                      types: ['address']
-                    }}
-                  >
-                    <input
-                      type="text"
-                      name="destination"
-                      value={formData.destination}
-                      onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                      className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                      placeholder="Zieladresse eingeben"
-                      required
-                    />
-                  </Autocomplete>
-                  <MapPin className="absolute left-3 top-3 text-gray-400" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block mb-2">Telefon *</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 text-gray-400" />
-                  <input 
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                    placeholder="Ihre Telefonnummer"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block mb-2">E-Mail *</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 text-gray-400" />
-                  <input 
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                    placeholder="Ihre E-Mail-Adresse"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block mb-2">Fahrzeugtyp *</label>
-                <div className="relative">
-                  <Car className="absolute left-3 top-3 text-gray-400" />
-                  <select
-                    name="vehicleType"
-                    value={formData.vehicleType}
-                    onChange={handleInputChange}
-                    className="w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none appearance-none border border-black"
-                    required
-                  >
-                    {vehicleTypes.map(type => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              {isScheduled && (
-                <div>
-                  <label className="block mb-2">Termin auswählen*</label>
-                  <div className="relative w-full">
-                    <DatePicker
-                      selected={selectedDateTime}
-                      onChange={(date) => setSelectedDateTime(date)}
-                      showTimeSelect
-                      timeFormat="HH:mm"
-                      timeIntervals={30}
-                      dateFormat="MMMM d, yyyy h:mm aa"
-                      minDate={new Date()}
-                      filterTime={isTimeSlotAvailable}
-                      timeClassName={timeClassName}
-                      className={`w-full bg-zinc-800 rounded-lg py-2 px-4 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
-                      placeholderText="Termin auswählen"
-                      required
-                    />
-                  </div>
-                  <p className="mt-2 text-sm text-gray-400">
-                    Hinweis: Maximal {MAX_BOOKINGS_PER_SLOT} Buchungen pro Zeitfenster für jeden Fahrzeugtyp zulässig.
+              {submitStatus.message}
+              {submitStatus.type === 'success' && bookingNumber && (
+                <div className="mt-2 p-3 bg-white rounded-md border border-green-200">
+                  <p className="font-semibold">Booking Number:</p>
+                  <p className="text-lg font-mono">{bookingNumber}</p>
+                  <p className="text-xs mt-1 text-gray-600">
+                    Please save this number for your reference
                   </p>
                 </div>
               )}
             </div>
+          </div>
+        )}
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="button"
-                onClick={handleCalculate}
-                disabled={!isFormValid}
-                className={`flex-1 bg-yellow-500 text-black py-3 px-6 rounded-lg font-semibold transition-colors ${
-                  !isFormValid 
-                    ? 'opacity-50 cursor-not-allowed bg-gray-400' 
-                    : 'hover:bg-yellow-400'
-                }`}
-              >
-                Berechnen
-              </button>
+        <div className="bg-zinc-800 p-6 rounded-lg shadow-lg space-y-6">
+          {/* Booking Type Selection */}
+          <div className="flex items-center justify-center space-x-4">
+            <button
+              type="button"
+              onClick={() => handleSchedulingChange(false)}
+              className={`px-6 py-2 rounded-full transition ${
+                !isScheduled
+                  ? 'bg-yellow-500 text-black font-semibold'
+                  : 'bg-zinc-700 text-white hover:bg-zinc-600'
+              }`}
+            >
+              Sofort fahren
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSchedulingChange(true)}
+              className={`px-6 py-2 rounded-full transition ${
+                isScheduled
+                  ? 'bg-yellow-500 text-black font-semibold'
+                  : 'bg-zinc-700 text-white hover:bg-zinc-600'
+              }`}
+            >
+              Fahrt buchen
+            </button>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-2">Abholort *</label>
+              <div className="relative">
+                <Autocomplete
+                  onLoad={onPickupLoad}
+                  onPlaceChanged={onPickupPlaceChanged}
+                  options={{
+                    componentRestrictions: { country: 'de' },
+                    types: ['address'],
+                    bounds: {
+                      north: Math.max(MAINZ_CENTER.lat, WIESBADEN_CENTER.lat) + 0.2,
+                      south: Math.min(MAINZ_CENTER.lat, WIESBADEN_CENTER.lat) - 0.2,
+                      east: Math.max(MAINZ_CENTER.lng, WIESBADEN_CENTER.lng) + 0.2,
+                      west: Math.min(MAINZ_CENTER.lng, WIESBADEN_CENTER.lng) - 0.2,
+                    },
+                    strictBounds: false
+                  }}
+                >
+                  <input
+                    type="text"
+                    name="pickupLocation"
+                    value={formData.pickupLocation}
+                    onChange={(e) => {
+                      setFormData({ ...formData, pickupLocation: e.target.value });
+                      if (e.target.value === '') {
+                        setPickupError('');
+                      }
+                    }}
+                    className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border ${
+                      pickupError ? 'border-red-500' : 'border-black'
+                    }`}
+                    placeholder="Abholadresse eingeben"
+                    required
+                  />
+                </Autocomplete>
+                <MapPin className="absolute left-3 top-3 text-gray-400" />
+              </div>
+              {pickupError && (
+                <p className="mt-2 text-sm text-red-500">
+                  {pickupError}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-2">Zielort *</label>
+              <div className="relative">
+                <Autocomplete
+                  onLoad={onDestinationLoad}
+                  onPlaceChanged={onDestinationPlaceChanged}
+                  options={{
+                    componentRestrictions: { country: 'de' },
+                    types: ['address']
+                  }}
+                >
+                  <input
+                    type="text"
+                    name="destination"
+                    value={formData.destination}
+                    onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+                    className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
+                    placeholder="Zieladresse eingeben"
+                    required
+                  />
+                </Autocomplete>
+                <MapPin className="absolute left-3 top-3 text-gray-400" />
+              </div>
             </div>
           </div>
-        </form>
-      ) : (
-        <div>Loading...</div>
-      )}
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-2">Telefon *</label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-3 text-gray-400" />
+                <input 
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
+                  placeholder="Ihre Telefonnummer"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block mb-2">E-Mail *</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 text-gray-400" />
+                <input 
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={`w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
+                  placeholder="Ihre E-Mail-Adresse"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-2">Fahrzeugtyp *</label>
+              <div className="relative">
+                <Car className="absolute left-3 top-3 text-gray-400" />
+                <select
+                  name="vehicleType"
+                  value={formData.vehicleType}
+                  onChange={handleInputChange}
+                  className="w-full bg-zinc-800 rounded-lg py-2 px-10 focus:ring-2 focus:ring-yellow-500 outline-none appearance-none border border-black"
+                  required
+                >
+                  {vehicleTypes.map(type => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {isScheduled && (
+              <div>
+                <label className="block mb-2">Termin auswählen*</label>
+                <div className="relative w-full">
+                  <DatePicker
+                    selected={selectedDateTime}
+                    onChange={(date) => setSelectedDateTime(date)}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={30}
+                    dateFormat="MMMM d, yyyy h:mm aa"
+                    minDate={new Date()}
+                    filterTime={isTimeSlotAvailable}
+                    timeClassName={timeClassName}
+                    className={`w-full bg-zinc-800 rounded-lg py-2 px-4 focus:ring-2 focus:ring-yellow-500 outline-none border border-black`}
+                    placeholderText="Termin auswählen"
+                    required
+                  />
+                </div>
+                <p className="mt-2 text-sm text-gray-400">
+                  Hinweis: Maximal {MAX_BOOKINGS_PER_SLOT} Buchungen pro Zeitfenster für jeden Fahrzeugtyp zulässig.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              type="button"
+              onClick={handleCalculate}
+              disabled={!isFormValid}
+              className={`flex-1 bg-yellow-500 text-black py-3 px-6 rounded-lg font-semibold transition-colors ${
+                !isFormValid 
+                  ? 'opacity-50 cursor-not-allowed bg-gray-400' 
+                  : 'hover:bg-yellow-400'
+              }`}
+            >
+              Berechnen
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }

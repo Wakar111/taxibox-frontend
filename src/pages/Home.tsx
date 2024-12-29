@@ -115,30 +115,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Standard Taxitarife Section */}
-      <section className="py-20 bg-zinc-900">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-12 text-center">Standard Taxitarife</h2>
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {standardTaxiRates.map((rate, index) => (
-                <div 
-                  key={index} 
-                  className="flex justify-between items-center p-6 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors duration-300 shadow-lg"
-                >
-                  <div className="flex items-center">
-                    <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full mr-4"></div>
-                    <span className="text-lg text-gray-100">{rate.type}</span>
+      <section id="price-table" className="bg-zinc-900 text-white">
+        {/* Standard Taxi Rates */}
+       <div className="max-w-4xl mx-auto mb-16">
+            <h2 className="text-2xl font-bold mb-6 text-center">Standard Taxitarife</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {standardTaxiRates.map((rate) => (
+                <div key={rate.type} className="bg-zinc-800 p-6 rounded-lg">
+                  <div className="flex flex-col items-center text-center">
+                    <span className="text-lg mb-2">{rate.type}</span>
+                    <span className="text-2xl font-bold text-yellow-500">{rate.price}</span>
                   </div>
-                  <span className="text-xl font-semibold text-yellow-500 ml-4">{rate.price}</span>
                 </div>
               ))}
             </div>
-            <p className="text-gray-400 text-center mt-8 text-sm">
-              * Alle Preise inkl. MwSt. Preise können je nach Uhrzeit und Strecke variieren.
-            </p>
           </div>
-        </div>
       </section>
 
       {/* Booking Section */}
