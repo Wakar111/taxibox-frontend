@@ -104,6 +104,96 @@ export default function AboutUs() {
         </div>
       </section>
 
+      {/* Team Section */}
+      <section className="py-16 px-4 bg-zinc-800">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-4">Unser Team</h2>
+          <p className="text-gray-300 text-center max-w-3xl mx-auto mb-12">
+            Lernen Sie die Menschen kennen, die TaxiBoy zu etwas Besonderem machen. 
+            Unser erfahrenes Team steht für Zuverlässigkeit, Professionalität und ausgezeichneten Service.
+          </p>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 px-4">
+            {/* Owner/Manager */}
+            <div className="bg-zinc-700 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <div className="h-72 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800"
+                  alt="Geschäftsführer"
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-2">Max Mustermann</h3>
+                <p className="text-yellow-500 text-lg mb-3">Geschäftsführer</p>
+                <p className="text-gray-300 text-base leading-relaxed">
+                  Seit über 10 Jahren leitet Max unser Unternehmen mit Leidenschaft und Engagement. 
+                  Seine Vision von erstklassigem Service prägt unsere tägliche Arbeit.
+                </p>
+              </div>
+            </div>
+
+            {/* Senior Driver */}
+            <div className="bg-zinc-700 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <div className="h-72 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1615567964485-0ee76b5b3410?auto=format&fit=crop&q=80&w=800"
+                  alt="Leitender Fahrer"
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-2">Thomas Schmidt</h3>
+                <p className="text-yellow-500 text-lg mb-3">Leitender Fahrer</p>
+                <p className="text-gray-300 text-base leading-relaxed">
+                  Mit 15 Jahren Erfahrung kennt Thomas jeden Winkel von Mainz. 
+                  Er ist bekannt für seine Pünktlichkeit und seinen ausgezeichneten Kundenservice.
+                </p>
+              </div>
+            </div>
+
+            {/* Customer Service */}
+            <div className="bg-zinc-700 rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <div className="h-72 overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800"
+                  alt="Kundenbetreuung"
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-2">Lisa Wagner</h3>
+                <p className="text-yellow-500 text-lg mb-3">Kundenbetreuung</p>
+                <p className="text-gray-300 text-base leading-relaxed">
+                  Lisa sorgt dafür, dass Ihre Buchungen reibungslos ablaufen und 
+                  steht Ihnen bei allen Fragen zur Verfügung.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Team Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-yellow-500 mb-2">10+</div>
+              <div className="text-gray-300">Jahre Erfahrung</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-yellow-500 mb-2">15+</div>
+              <div className="text-gray-300">Professionelle Fahrer</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-yellow-500 mb-2">10k+</div>
+              <div className="text-gray-300">Zufriedene Kunden</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-yellow-500 mb-2">24/7</div>
+              <div className="text-gray-300">Verfügbarkeit</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Contact CTA */}
       <section className="py-16 px-4 bg-zinc-800">
         <div className="max-w-4xl mx-auto text-center">
