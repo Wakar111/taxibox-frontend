@@ -47,7 +47,7 @@ export default function Home() {
           />
         </div>
         <div className="relative text-center space-y-6 px-4">
-          <h1 className="text-6xl font-bold">Ihr zuverlässiger Partner für Taxifahrten</h1>
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold">Ihr zuverlässiger Partner für Taxifahrten</h1>
           <p className="text-xl max-w-2xl mx-auto">Professioneller Service, erfahrene Fahrer und komfortable Fahrzeuge für Ihre sichere Reise</p>
           <button 
             onClick={() => scrollToSection('booking')}
