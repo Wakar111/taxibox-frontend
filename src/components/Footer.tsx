@@ -19,7 +19,17 @@ export default function Footer() {
           <Link to="/cookie-policy" className="hover:text-yellow-500">Cookie-Richtlinien</Link>
           <Link to="/imprint" className="hover:text-yellow-500">Impressum</Link>
         </div>
-        <p> 2024 TaxiBoy. All rights reserved.</p>
+        <p className="mt-2">
+          Designed by{' '}
+          <a 
+            href="https://innovativ-tech.de" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-yellow-500 hover:text-yellow-400"
+          >
+            innovativ-tech
+          </a>
+        </p>
       </div>
     </footer>
   );
