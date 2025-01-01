@@ -64,7 +64,7 @@ export default function BookingForm() {
     { value: 'taxi', label: 'Taxi (max 4 personen)' },
     { value: 'taxi-gross', label: 'Großraumtaxi(max 6 personen)' },
     { value: 'mietwagen', label: 'Mietwagen (max 4 Personen)' },
-    { value: 'minivan', label: 'Minivan (max 8 Personen)' }
+    { value: 'mietwagen-gross', label: 'Großraum-Mietwagen (max 8 Personen)' }
   ];
 
   const getBookingCount = (time: Date, vehicleType: string): number => {
@@ -231,8 +231,8 @@ export default function BookingForm() {
         case 'mietwagen':
           perKm = distanceInKm * 1.60;
           break;
-        case 'minivan':
-          perKm = distanceInKm * 2.00;
+        case 'mietwagen-gross':
+          perKm = distanceInKm * 1.80;
           break;
       }
 

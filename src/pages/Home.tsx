@@ -13,6 +13,10 @@ const standardTaxiRates = [
   { type: 'Wartezeit pro Stunde', price: '40.00€' },
   { type: 'Großraum (4€ Grundpreis + 5€ Umschlag)', price: '9.00€' },
 ];
+const rentalCarRates = [
+  { type: 'Mietwagen normal (4 Personen)', price: '1.60€/km' },
+  { type: 'Mietwagen Großraum (6 Personen)', price: '1.80€/km' },
+];
 
 export default function Home() {
   const location = useLocation();
@@ -116,7 +120,7 @@ export default function Home() {
       </section>
 
       {/* Standard Taxitarife Section */}
-      <section className="py-20 bg-zinc-900">
+      <section className="py-12 bg-zinc-800">
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-bold mb-12 text-center">Standard Taxitarife</h2>
           <div className="max-w-5xl mx-auto">
@@ -124,7 +128,7 @@ export default function Home() {
               {standardTaxiRates.map((rate, index) => (
                 <div 
                   key={index} 
-                  className="flex justify-between items-center p-6 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors duration-300 shadow-lg"
+                  className="flex justify-between items-center p-6 bg-zinc-900 rounded-xl hover:bg-zinc-700 transition-colors duration-300 shadow-lg"
                 >
                   <div className="flex items-center">
                     <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full mr-4"></div>
@@ -141,8 +145,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Mietwagentarife Section */}
+      <section className="py-12 bg-zinc-900">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl font-bold mb-12 text-center">Mietwagentarife</h2>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {rentalCarRates.map((rate, index) => (
+                <div 
+                  key={index} 
+                  className="flex justify-between items-center p-6 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors duration-300 shadow-lg"
+                >
+                  <div className="flex items-center">
+                    <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full mr-4"></div>
+                    <span className="text-lg text-gray-100">{rate.type}</span>
+                  </div>
+                  <span className="text-xl font-semibold text-yellow-500 ml-4">{rate.price}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-gray-400 text-center mt-8 text-sm">
+              * Alle Preise inkl. MwSt. Mindestfahrstrecke und zusätzliche Konditionen können anfallen. Die Mietwagen haben keinen Grundpreis.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Booking Section */}
-      <section id="booking" className="py-20 bg-zinc-800">
+      <section id="booking" className="py-12 bg-zinc-800">
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-bold mb-12 text-center">Jetzt buchen</h2>
           <div className="max-w-2xl mx-auto bg-zinc-900 p-8 rounded-xl shadow-xl">
