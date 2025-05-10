@@ -149,7 +149,7 @@ export default function BookingOverview() {
         : 'Sofort';
     
     const bookingData = {
-      type: bookingDetails.isScheduled ? 'Scheduled Ride' : 'Immediate Ride',
+      type: bookingDetails.isScheduled ? 'Geplante Fahrt' : 'Sofortige Fahrt',
       pickupLocation: bookingDetails.startAddress,
       destination: bookingDetails.endAddress,
       dateTime: dateTimeString,
@@ -316,14 +316,21 @@ export default function BookingOverview() {
             </div>
           </div>
 
+
           {/* Price Summary */}
           <div className="bg-zinc-800 p-6 rounded-lg shadow-lg mb-8">
             <h2 className="text-xl font-semibold mb-4 text-white">Preis Übersicht</h2>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex justify-between items-center text-gray-300">
                 <span>Grundpreis:</span>
-                <span>{bookingDetails.price.base.toFixed(2)}€</span>
+                <span>{(bookingDetails.vehicleType === 'taxi-gross' ? bookingDetails.price.base - 5 : bookingDetails.price.base).toFixed(2)}€</span>
               </div>
+              {bookingDetails.vehicleType === 'taxi-gross' && (
+                <div className="flex justify-between items-center text-gray-300">
+                  <span>Großraum-Umschlag:</span>
+                  <span>5.00€</span>
+                </div>
+              )}
               <div className="flex justify-between items-center text-gray-300">
                 <span>Km Preis:</span>
                 <span>{bookingDetails.price.perKm.toFixed(2)}€</span>

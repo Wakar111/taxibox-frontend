@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Shield, Star, Clock, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -7,24 +7,30 @@ import Footer from '../components/Footer';
 import BookingForm from '../components/BookingForm';
 
 const standardTaxiRates = [
-  { type: 'Grundpreis', price: '4.00€' },
+  { type: 'Taxi Grundpreis', price: '4.00€' },
   { type: 'bis 4. Kilometer', price: '2.50€' },
   { type: 'Je weiteren Kilometer', price: '1.80€' },
   { type: 'Wartezeit pro Stunde', price: '40.00€' },
-  { type: 'Großraumumschalg (4-6 Personen)', price: '5.00€' },
+  { type: 'Großraum (4€ Grundpreis + 5€ Umschlag)', price: '9.00€' },
+];
+const rentalCarRates = [
+  { type: 'Mietwagen normal (4 Personen)', price: '1.60€/km' },
+  { type: 'Mietwagen Großraum (6 Personen)', price: '1.80€/km' },
 ];
 
 export default function Home() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    if (location.state?.scrollToBooking) {
+    // Check for both state and URL parameter
+    if (location.state?.scrollToBooking || searchParams.get('booking') === 'true') {
       const bookingSection = document.getElementById('booking');
       if (bookingSection) {
         bookingSection.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [location.state]);
+  }, [location.state, searchParams]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -39,13 +45,13 @@ export default function Home() {
       <div className="h-screen relative flex items-center justify-center">
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1626668893632-6f3a4466d22f?auto=format&fit=crop&q=80"
+            src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80"
             alt="Mercedes Luxury Car"
             className="w-full h-full object-cover opacity-50"
           />
         </div>
         <div className="relative text-center space-y-6 px-4">
-          <h1 className="text-6xl font-bold">Ihr zuverlässiger Partner für Taxifahrten</h1>
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold">Ihr zuverlässiger Partner für Taxifahrten</h1>
           <p className="text-xl max-w-2xl mx-auto">Professioneller Service, erfahrene Fahrer und komfortable Fahrzeuge für Ihre sichere Reise</p>
           <button 
             onClick={() => scrollToSection('booking')}
@@ -89,19 +95,19 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-bold mb-12 text-center">Unsere Angebote</h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <Link to="/taxi-rechner" className="relative h-64 rounded-xl overflow-hidden group">
+            <Link to="/about" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
-                src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80"
+                src="https://images.unsplash.com/photo-1512978748615-0bfcbdc57bc3?auto=format&fit=crop&q=80"
                 alt="Flughafentransfer"
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <h3 className="text-2xl font-bold">Taxirechner</h3>
+                <h3 className="text-2xl font-bold">Unsere Leistungen</h3>
               </div>
             </Link>
             <Link to="/business-travel" className="relative h-64 rounded-xl overflow-hidden group">
               <img 
-                src="https://images.unsplash.com/photo-1611448746128-7c39e03b71e4?auto=format&fit=crop&q=80"
+                src="https://plus.unsplash.com/premium_photo-1664478072478-549adcf0d953?auto=format&fit=crop&q=80"
                 alt="Geschäftsreisen"
                 className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
               />
@@ -112,26 +118,61 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
-      <section id="price-table" className="bg-zinc-900 text-white">
-        {/* Standard Taxi Rates */}
-       <div className="max-w-4xl mx-auto mb-16">
-            <h2 className="text-2xl font-bold mb-6 text-center">Standard Taxitarife</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {standardTaxiRates.map((rate) => (
-                <div key={rate.type} className="bg-zinc-800 p-6 rounded-lg">
-                  <div className="flex flex-col items-center text-center">
-                    <span className="text-lg mb-2">{rate.type}</span>
-                    <span className="text-2xl font-bold text-yellow-500">{rate.price}</span>
+
+      {/* Standard Taxitarife Section */}
+      <section className="py-12 bg-zinc-800">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl font-bold mb-12 text-center">Standard Taxitarife</h2>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {standardTaxiRates.map((rate, index) => (
+                <div 
+                  key={index} 
+                  className="flex justify-between items-center p-6 bg-zinc-900 rounded-xl hover:bg-zinc-700 transition-colors duration-300 shadow-lg"
+                >
+                  <div className="flex items-center">
+                    <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full mr-4"></div>
+                    <span className="text-lg text-gray-100">{rate.type}</span>
                   </div>
+                  <span className="text-xl font-semibold text-yellow-500 ml-4">{rate.price}</span>
                 </div>
               ))}
             </div>
+            <p className="text-gray-400 text-center mt-8 text-sm">
+              * Alle Preise inkl. MwSt. Preise können je nach Uhrzeit und Strecke variieren.
+            </p>
           </div>
+        </div>
+      </section>
+
+      {/* Mietwagentarife Section */}
+      <section className="py-12 bg-zinc-900">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl font-bold mb-12 text-center">Mietwagentarife</h2>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {rentalCarRates.map((rate, index) => (
+                <div 
+                  key={index} 
+                  className="flex justify-between items-center p-6 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors duration-300 shadow-lg"
+                >
+                  <div className="flex items-center">
+                    <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full mr-4"></div>
+                    <span className="text-lg text-gray-100">{rate.type}</span>
+                  </div>
+                  <span className="text-xl font-semibold text-yellow-500 ml-4">{rate.price}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-gray-400 text-center mt-8 text-sm">
+              * Alle Preise inkl. MwSt. Mindestfahrstrecke und zusätzliche Konditionen können anfallen. Die Mietwagen haben keinen Grundpreis.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Booking Section */}
-      <section id="booking" className="py-20 bg-zinc-800">
+      <section id="booking" className="py-12 bg-zinc-800">
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-bold mb-12 text-center">Jetzt buchen</h2>
           <div className="max-w-2xl mx-auto bg-zinc-900 p-8 rounded-xl shadow-xl">
