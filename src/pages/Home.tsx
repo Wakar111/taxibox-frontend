@@ -66,6 +66,41 @@ export default function Home() {
         />
       </div>
 
+      {/* Image Gallery Section */}
+      <section className="py-16 bg-zinc-900">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Unser Fuhrpark</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="group relative overflow-hidden rounded-xl shadow-2xl transform transition-transform duration-500 hover:scale-105">
+              <img 
+                src="/Taxi-Boy-2.jpeg" 
+                alt="Luxusfahrzeug für besondere Anlässe"
+                className="w-full h-80 object-cover transition-opacity duration-300 group-hover:opacity-90"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Premium Fahrzeuge</h3>
+                  <p className="text-gray-200">Höchster Komfort für Ihre Fahrt</p>
+                </div>
+              </div>
+            </div>
+            <div className="group relative overflow-hidden rounded-xl shadow-2xl transform transition-transform duration-500 hover:scale-105">
+              <img 
+                src="/Taxi-Boy-3.jpeg" 
+                alt="Zuverlässiger Transport zum Flughafen"
+                className="w-full h-80 object-cover transition-opacity duration-300 group-hover:opacity-90"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Flughafentransfer</h3>
+                  <p className="text-gray-200">Pünktlich und zuverlässig</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* About Section */}
       <section id="about" className="py-20 bg-zinc-800">
         <div className="container mx-auto px-6">
