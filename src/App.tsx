@@ -7,6 +7,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import BookingOverview from './pages/BookingOverview';
 import CookieBanner from './components/CookieBanner';
 import Imprint from './pages/Imprint';
+import KrankenfahrtenInfo from './pages/KrankenfahrtenInfo';
 import { GoogleMapsProvider } from './contexts/GoogleMapsContext';
 import { useEffect } from 'react';
 import AOS from 'aos';
@@ -41,6 +42,7 @@ function App() {
         <Route path="/cookie-policy" element={<CookiePolicy />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/imprint" element={<Imprint />} />
+        <Route path="/krankenfahrten" element={<KrankenfahrtenInfo />} />
       </Routes>
       <CookieBanner />
     </GoogleMapsProvider>

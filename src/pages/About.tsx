@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -38,6 +38,11 @@ const vehicles = [
     image: "/Taxi-Boy-3.jpeg"
   },
   {
+    type: "Krankenfahrten",
+    description: "Sicherer Transport zu medizinischen Terminen",
+    image: "/Taxi-Boy-8.jpeg"
+  },
+  {
     type: "Mercedes Vito Tourer",
     description: "Großraumtaxi für bis zu 9 Personen",
     image: "/Taxi-Boy-2.jpeg"
@@ -45,9 +50,21 @@ const vehicles = [
 ];
 
 export default function AboutUs() {
+  const navigate = useNavigate();
+
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleBookingClick = () => {
+    navigate('/');
+    setTimeout(() => {
+      const bookingSection = document.getElementById('booking');
+      if (bookingSection) {
+        bookingSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-900 text-white">
@@ -98,25 +115,72 @@ export default function AboutUs() {
       </section>
 
       {/* Vehicle Fleet Section */}
-      <section className="py-12 sm:py-14 md:py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl sm:text-2xl md:text-3xl font-bold text-center mb-8 sm:mb-10 md:mb-12">Unsere Fahrzeugflotte</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+      <section className="py-12 sm:py-14 md:py-16 px-4 bg-gradient-to-b from-zinc-900 to-zinc-950">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-2xl md:text-3xl font-bold mb-4">Unsere Fahrzeugflotte</h2>
+            <p className="text-gray-300 max-w-3xl mx-auto">Entdecken Sie unsere moderne Mercedes-Benz Flotte für jeden Anlass</p>
+          </div>
+          
+          <div className="flex flex-nowrap gap-4 sm:gap-6 md:gap-8 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            {/* Add padding to allow full scroll on mobile */}
+            <div className="flex-shrink-0 w-4"></div>
             {vehicles.map((vehicle, index) => (
-              <div key={index} className="bg-zinc-800 rounded-lg overflow-hidden">
-                <div className="h-40 sm:h-44 md:h-48 overflow-hidden">
-                  <img 
-                    src={vehicle.image} 
-                    alt={vehicle.type}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                  />
-                </div>
-                <div className="p-4 sm:p-5 md:p-6">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">{vehicle.type}</h3>
-                  <p className="text-sm sm:text-base text-gray-300">{vehicle.description}</p>
+              <div 
+                key={index}
+                className="group bg-zinc-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-xl border border-zinc-700/30 transform transition-all duration-500 hover:-translate-y-1 hover:shadow-yellow-500/10 flex-shrink-0 w-72 sm:w-80 snap-start"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+                data-aos-duration="600"
+              >
+                <div className="flex flex-col h-full">
+                  <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
+                    <img 
+                      src={vehicle.image}
+                      alt={vehicle.type}
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  </div>
+                  <div className="flex flex-col flex-grow p-4 sm:p-5 md:p-6">
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">
+                        {vehicle.type}
+                      </h3>
+                      <p className="text-gray-300">
+                        {vehicle.description}
+                      </p>
+                    </div>
+                    <div className="mt-auto pt-4">
+                      {vehicle.type === "Krankenfahrten" ? (
+                        <Link 
+                          to="/krankenfahrten"
+                          className="w-full bg-zinc-700 hover:bg-yellow-500 text-white hover:text-black font-medium py-2 px-3 sm:px-4 rounded text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                          Mehr Infos
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </Link>
+                      ) : (
+                        <button 
+                          onClick={handleBookingClick}
+                          className="w-full bg-zinc-700 hover:bg-yellow-500 text-white hover:text-black font-medium py-2 px-3 sm:px-4 rounded text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                          Jetzt buchen
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
+            {/* Add padding to allow full scroll on mobile */}
+            <div className="flex-shrink-0 w-4"></div>
           </div>
         </div>
       </section>

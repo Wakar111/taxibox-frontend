@@ -110,7 +110,9 @@ export default function Home() {
             <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-2">Erleben Sie erstklassigen Komfort und Zuverlässigkeit mit unserer modernen Mercedes-Benz Fahrzeugflotte</p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
+          <div className="flex flex-nowrap gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            {/* Add padding to allow full scroll on mobile */}
+            <div className="flex-shrink-0 w-4"></div>
             {[
               {
                 img: "/Taxi-Boy-5.jpeg",
@@ -123,6 +125,12 @@ export default function Home() {
                 title: "Flughafentransfer",
                 desc: "Pünktlich und zuverlässig zum Flughafen",
                 icon: "✓ Gepäckservice"
+              },
+              {
+                img: "/Taxi-Boy-8.jpeg",
+                title: "Krankenfahrten",
+                desc: "Sicherer Transport zu medizinischen Terminen",
+                icon: "✓ Barrierefreier Zugang"
               },
               {
                 img: "/Taxi-Boy-4.jpeg",
@@ -139,44 +147,62 @@ export default function Home() {
             ].map((item, index) => (
               <div 
                 key={index}
-                className="group bg-zinc-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-xl border border-zinc-700/30 transform transition-all duration-500 hover:-translate-y-1 hover:shadow-yellow-500/10"
+                className="group bg-zinc-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-xl border border-zinc-700/30 transform transition-all duration-500 hover:-translate-y-1 hover:shadow-yellow-500/10 flex-shrink-0 w-72 sm:w-80 snap-start"
                 data-aos="fade-up"
                 data-aos-delay={index * 100}
                 data-aos-duration="600"
               >
-                <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
-                  <img 
-                    src={item.img}
-                    alt={item.title}
-                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </div>
-                <div className="p-4 sm:p-5 md:p-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-300 mb-4">
-                    {item.desc}
-                  </p>
-                  <div className="text-sm text-yellow-400 font-medium">
-                    {item.icon}
+                <div className="flex flex-col h-full">
+                  <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
+                    <img 
+                      src={item.img}
+                      alt={item.title}
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   </div>
-                </div>
-                <div className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 pt-0">
-                  <button 
-                    onClick={() => scrollToSection('booking')}
-                    className="w-full bg-zinc-700 hover:bg-yellow-500 text-white hover:text-black font-medium py-2 px-3 sm:px-4 rounded text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2"
-                  >
-                    Jetzt buchen
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
+                  <div className="flex flex-col flex-grow p-4 sm:p-5 md:p-6">
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-300">
+                        {item.desc}
+                      </p>
+                      <div className="text-sm text-yellow-400 font-medium mt-4">
+                        {item.icon}
+                      </div>
+                    </div>
+                    <div className="mt-auto pt-4">
+                      {item.title === "Krankenfahrten" ? (
+                        <Link 
+                          to="/krankenfahrten"
+                          className="w-full bg-zinc-700 hover:bg-yellow-500 text-white hover:text-black font-medium py-2 px-3 sm:px-4 rounded text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                          Mehr Infos
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </Link>
+                      ) : (
+                        <button 
+                          onClick={() => scrollToSection('booking')}
+                          className="w-full bg-zinc-700 hover:bg-yellow-500 text-white hover:text-black font-medium py-2 px-3 sm:px-4 rounded text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                          Jetzt buchen
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
+            {/* Add padding to allow full scroll on mobile */}
+            <div className="flex-shrink-0 w-4"></div>
           </div>
           
 
