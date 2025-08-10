@@ -9,11 +9,22 @@ import CookieBanner from './components/CookieBanner';
 import Imprint from './pages/Imprint';
 import { GoogleMapsProvider } from './contexts/GoogleMapsContext';
 import { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 function App() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-out-cubic',
+      once: true,
+      offset: 50
+    });
+
+    // Smooth scroll to top on route change
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
