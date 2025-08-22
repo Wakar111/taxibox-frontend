@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Car, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import taxiBoyLogo from '../taxiBoyLogo.png';
 
 interface NavbarProps {
   onSectionClick?: (id: string) => void;
@@ -8,11 +9,11 @@ interface NavbarProps {
 }
 
 const navigationItems = [
-  { path: '/', label: 'Startseite' }
+  { path: '/', label: 'Startseite' },
+  { path: '/about', label: 'Über uns' }
 ];
 
 const scrollItems = [
-  { id: 'about', label: 'Über uns' },
   { id: 'services', label: 'Angebote' },
   { id: 'booking', label: 'Jetzt buchen' }
 ];
@@ -31,7 +32,11 @@ export default function Navbar({ onSectionClick, showNavLinks = true }: NavbarPr
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <a href="/" className="flex items-center space-x-2">
-            <Car className="h-8 w-8 text-yellow-500" />
+            <img 
+                src={taxiBoyLogo} 
+                alt="TaxiBoy Mainz Logo" 
+                className="h-12 w-13"
+              />
             <span className="text-2xl font-bold text-white">TaxiBoy</span>
           </a>
 
